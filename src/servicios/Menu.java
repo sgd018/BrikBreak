@@ -6,7 +6,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class Menu extends JPanel {
-
     private JFrame frame;
 
     public Menu(JFrame frame) {
@@ -74,11 +73,20 @@ public class Menu extends JPanel {
     }
 
     private void iniciarJuego(String nivel) {
-        frame.getContentPane().removeAll();
+        frame.dispose(); // Cerrar la ventana actual
+        
+        // Crear nueva ventana a pantalla completa
+        JFrame gameFrame = new JFrame("Brick Breaker - " + nivel);
+        gameFrame.setUndecorated(true); // Quitar la decoración de la ventana
+        gameFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        
         if (nivel.equals("facil")) {
-            frame.getContentPane().add(new PanelJuegoNivelFacil(frame));
+            gameFrame.add(new PanelJuegoNivelFacil(gameFrame));
+        } else {
+            // Aquí iría el panel del nivel medio cuando lo implementemos
+            gameFrame.add(new PanelJuegoNivelFacil(gameFrame));
         }
-        frame.revalidate();
-        frame.repaint();
+        
+        gameFrame.setVisible(true);
     }
 }

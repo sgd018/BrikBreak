@@ -21,7 +21,12 @@ public class JuegoServiceImpl implements IJuegoService {
         }
     }
 
-    @Override
+    public JuegoServiceImpl(PanelJuegoNivelMedio panelJuegoNivelMedio, String nivel, int tiempoLimite2,
+			int puntosObjetivo2) {
+		// TODO Auto-generated constructor stub
+	}
+
+	@Override
     public void iniciarJuego() {
         panelJuego.iniciarJuego();
     }

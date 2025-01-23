@@ -118,13 +118,13 @@ public class PanelJuegoNivelFacil extends JPanel implements ActionListener {
         int ladrilloAlto = 20;
         int espacioEntreX = 10;
         int espacioEntreY = 10;
-        int margenSuperior = 50;
+        int margenSuperior = 150;
 
         // Calcular el ancho total necesario para una fila de ladrillos
         int anchoFila = numLadrillosPorFila * ladrilloAncho + (numLadrillosPorFila - 1) * espacioEntreX;
 
         // Centrar los ladrillos horizontalmente
-        int margenIzquierdo = (getWidth() - anchoFila) / 2;
+        int margenIzquierdo = 400;
 
         for (int i = 0; i < 20; i++) {
             int fila = i / numLadrillosPorFila;
@@ -148,7 +148,7 @@ public class PanelJuegoNivelFacil extends JPanel implements ActionListener {
         // Calcular la posición para los nuevos ladrillos
         int filaActual = ladrillos.size() / numLadrillosPorFila;
         int margenSuperior = 50 + (filaActual * (ladrilloAlto + espacioEntreY));
-        int margenIzquierdo = 50;
+        int margenIzquierdo = 200;
 
         for (int i = 0; i < cantidad; i++) {
             int columna = ladrillos.size() % numLadrillosPorFila;
@@ -192,8 +192,8 @@ public class PanelJuegoNivelFacil extends JPanel implements ActionListener {
 
     public void iniciarJuego() {
         if (!juegoIniciado) {
-            pelota.setDx(3); // Velocidad inicial de la pelota
-            pelota.setDy(-3);
+            pelota.setDx(5); // Velocidad inicial de la pelota
+            pelota.setDy(-5);
             juegoIniciado = true;
             remove(instruccionLabel);
             repaint();
@@ -220,8 +220,8 @@ public class PanelJuegoNivelFacil extends JPanel implements ActionListener {
             double angulo = relativoImpacto * Math.PI - Math.PI/2;
             double velocidad = Math.sqrt(pelota.getDx() * pelota.getDx() + pelota.getDy() * pelota.getDy());
             
-            pelota.setDx((int)(velocidad * Math.cos(angulo)));
-            pelota.setDy(-(int)(velocidad * Math.sin(angulo)));
+            pelota.setDx(-pelota.getDx());
+            pelota.setDy(-pelota.getDy());
             
             // Asegurar que la pelota no quede "pegada" a la paleta
             pelota.setY(paleta.getY() - pelota.getAlto());

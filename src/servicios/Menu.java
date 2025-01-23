@@ -83,8 +83,8 @@ public class Menu extends JPanel {
         if (nivel.equals("facil")) {
             gameFrame.add(new PanelJuegoNivelFacil(gameFrame));
         } else {
-            // Aquí iría el panel del nivel medio cuando lo implementemos
-            gameFrame.add(new PanelJuegoNivelFacil(gameFrame));
+        	//Aquí ejecuta el nivel medio
+            gameFrame.add(new PanelJuegoNivelMedio(gameFrame));
         }
         
         gameFrame.setVisible(true);

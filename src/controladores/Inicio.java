@@ -1,4 +1,4 @@
-package controlador;
+package controladores;
 
 import javax.swing.JFrame;
 import servicios.Menu;

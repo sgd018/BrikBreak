@@ -1,4 +1,4 @@
-package servicios;
+/*package servicios;
 
 import javax.swing.*;
 import java.awt.*;
@@ -142,4 +142,4 @@ public class PanelJuego extends JPanel implements ActionListener {
         pelota.setDx(2);
         pelota.setDy(2);
     }
-}
+}*/

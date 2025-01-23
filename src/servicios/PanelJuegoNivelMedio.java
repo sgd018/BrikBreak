@@ -17,49 +17,45 @@ public class PanelJuegoNivelMedio extends JPanel implements ActionListener {
     private boolean juegoIniciado = false;
     private IJuegoService juegoService;
     private JLabel instruccionLabel;
-    private int tiempoJuego = 600000; // 10 minutos en milisegundos
-    private int tiempoLadrillos = 120000; // Cada 2 minutos en milisegundos
-    private long tiempoInicio; // Momento en que inicia el juego
-    private long tiempoUltimosLadrillos; // Última vez que se añadieron ladrillos
-
+    private int tiempoJuego = 300000; // 5 minutos en milisegundos
+    private int tiempoLadrillos = 15000; // Cada 15 segundos
+    private long tiempoInicio;
+    private long tiempoUltimosLadrillos;
+    private Ladrillo bloqueSuperior;
+    private Ladrillo bloqueInferior;
 
     public PanelJuegoNivelMedio(JFrame frame) {
         this.frame = frame;
         setLayout(null);
         setBackground(Color.BLACK);
 
-        // Obtener dimensiones de la pantalla
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         int screenWidth = (int) screenSize.getWidth();
         int screenHeight = (int) screenSize.getHeight();
 
-        // Inicializar pelota en el centro inferior, justo encima de la paleta
-        int pelotaX = screenWidth / 2 - 5; // 5 es la mitad del ancho de la pelota
-        int pelotaY = screenHeight - 150; // 150 pixeles desde abajo
+        int pelotaX = screenWidth / 2 - 5;
+        int pelotaY = screenHeight - 150;
         pelota = new Pelota(pelotaX, pelotaY, 10, 10, 0, 0);
 
-        // Inicializar paleta centrada en la parte inferior
-        int paletaX = screenWidth / 2 - 50; // 50 es la mitad del ancho de la paleta
-        int paletaY = screenHeight - 100; // 100 pixeles desde abajo
+        int paletaX = screenWidth / 2 - 50;
+        int paletaY = screenHeight - 100;
         paleta = new Paleta(paletaX, paletaY, 100, 10, 0);
+
+        bloqueSuperior = new Ladrillo(0, 0, screenWidth, 20);
+        bloqueInferior = new Ladrillo(0, screenHeight - 20, screenWidth, 20);
 
         ladrillos = new ArrayList<>();
         inicializarLadrillos();
 
-        // Inicializar el servicio
-        this.juegoService = new JuegoServiceImpl(this, "facil", 600, 300);
+        this.juegoService = new JuegoServiceImpl(this, "medio", 300, 150);
 
-        // Configurar y añadir el botón de salir
         configurarBotonSalir(screenWidth);
-
-        // Configurar instrucciones
         configurarInstrucciones(screenWidth, screenHeight);
 
         timer = new Timer(10, this);
         timer.start();
         tiempoInicio = System.currentTimeMillis();
         tiempoUltimosLadrillos = tiempoInicio;
-
 
         configurarControles();
     }
@@ -70,10 +66,10 @@ public class PanelJuegoNivelMedio extends JPanel implements ActionListener {
             public void keyPressed(KeyEvent e) {
                 int key = e.getKeyCode();
                 if (key == KeyEvent.VK_LEFT) {
-                    paleta.setDx(-10); // Aumentado la velocidad de la paleta
+                    paleta.setDx(-5);
                     if (!juegoIniciado) iniciarJuego();
                 } else if (key == KeyEvent.VK_RIGHT) {
-                    paleta.setDx(10); // Aumentado la velocidad de la paleta
+                    paleta.setDx(5);
                     if (!juegoIniciado) iniciarJuego();
                 } else if (key == KeyEvent.VK_SPACE && !juegoIniciado) {
                     iniciarJuego();
@@ -100,7 +96,7 @@ public class PanelJuegoNivelMedio extends JPanel implements ActionListener {
         btnSalir.setForeground(Color.BLACK);
         btnSalir.setBounds(screenWidth - 150, 20, 100, 30);
         btnSalir.addActionListener(e -> salirAlMenu());
-        btnSalir.setFocusable(false); // Importante para que no tome el foco del teclado
+        btnSalir.setFocusable(false);
         add(btnSalir);
     }
     
@@ -119,11 +115,6 @@ public class PanelJuegoNivelMedio extends JPanel implements ActionListener {
         int espacioEntreX = 10;
         int espacioEntreY = 10;
         int margenSuperior = 150;
-
-        // Calcular el ancho total necesario para una fila de ladrillos
-        int anchoFila = numLadrillosPorFila * ladrilloAncho + (numLadrillosPorFila - 1) * espacioEntreX;
-
-        // Centrar los ladrillos horizontalmente
         int margenIzquierdo = 400;
 
         for (int i = 0; i < 20; i++) {
@@ -137,7 +128,6 @@ public class PanelJuegoNivelMedio extends JPanel implements ActionListener {
         }
     }
 
-
     public void agregarLadrillos(int cantidad) {
         int numLadrillosPorFila = 5;
         int ladrilloAncho = 80;
@@ -145,7 +135,6 @@ public class PanelJuegoNivelMedio extends JPanel implements ActionListener {
         int espacioEntreX = 10;
         int espacioEntreY = 10;
         
-        // Calcular la posición para los nuevos ladrillos
         int filaActual = ladrillos.size() / numLadrillosPorFila;
         int margenSuperior = 50 + (filaActual * (ladrilloAlto + espacioEntreY));
         int margenIzquierdo = 200;
@@ -167,15 +156,16 @@ public class PanelJuegoNivelMedio extends JPanel implements ActionListener {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        // Dibujar la pelota
         g.setColor(Color.WHITE);
         g.fillOval(pelota.getX(), pelota.getY(), pelota.getAncho(), pelota.getAlto());
 
-        // Dibujar la paleta
         g.setColor(Color.BLUE);
         g.fillRect(paleta.getX(), paleta.getY(), paleta.getAncho(), paleta.getAlto());
 
-        // Dibujar los ladrillos
+        g.setColor(Color.GRAY);
+        g.fillRect(bloqueSuperior.getX(), bloqueSuperior.getY(), bloqueSuperior.getAncho(), bloqueSuperior.getAlto());
+        g.fillRect(bloqueInferior.getX(), bloqueInferior.getY(), bloqueInferior.getAncho(), bloqueInferior.getAlto());
+
         g.setColor(Color.RED);
         for (Ladrillo ladrillo : ladrillos) {
             if (ladrillo.isVisible()) {
@@ -183,7 +173,6 @@ public class PanelJuegoNivelMedio extends JPanel implements ActionListener {
             }
         }
 
-        // Dibujar puntuación y vidas
         g.setColor(Color.WHITE);
         g.setFont(new Font("Arial", Font.BOLD, 16));
         g.drawString("Puntuación: " + puntuacion, 20, 40);
@@ -192,87 +181,68 @@ public class PanelJuegoNivelMedio extends JPanel implements ActionListener {
 
     public void iniciarJuego() {
         if (!juegoIniciado) {
-            pelota.setDx(8); // Velocidad inicial de la pelota
-            pelota.setDy(-8);
+            pelota.setDx(4);
+            pelota.setDy(-4);
             juegoIniciado = true;
             remove(instruccionLabel);
             repaint();
         }
     }
 
-    
-
     private void detectarColisiones() {
-        // Colisiones con los bordes
-        if (pelota.getX() <= 0 || pelota.getX() + pelota.getAncho() >= getWidth()) {
-            pelota.invertirDireccionX();
-        }
-        if (pelota.getY() <= 0) {
+        if (pelota.intersects(bloqueSuperior) || pelota.intersects(bloqueInferior)) {
             pelota.invertirDireccionY();
         }
 
-        // Colisión con la paleta
+        if (pelota.getX() <= 0 || pelota.getX() + pelota.getAncho() >= getWidth()) {
+            pelota.invertirDireccionX();
+        }
+
         if (pelota.intersects(paleta)) {
-            // Calcular el punto de impacto relativo en la paleta
             double relativoImpacto = (pelota.getX() + (pelota.getAncho() / 2.0) - paleta.getX()) / paleta.getAncho();
-            
-            // Ajustar el ángulo de rebote basado en el punto de impacto
-            double angulo = relativoImpacto * Math.PI - Math.PI/2;
-            double velocidad = Math.sqrt(pelota.getDx() * pelota.getDx() + pelota.getDy() * pelota.getDy());
-            
-            pelota.setDx(-pelota.getDx());
-            pelota.setDy(-pelota.getDy());
-            
-            // Asegurar que la pelota no quede "pegada" a la paleta
+            pelota.setDx(-pelota.getDx() * 0.8);
+            pelota.setDy(-Math.abs(pelota.getDy()));
             pelota.setY(paleta.getY() - pelota.getAlto());
         }
 
-        // Colisión con los ladrillos
         for (Ladrillo ladrillo : ladrillos) {
             if (ladrillo.isVisible() && pelota.intersects(ladrillo)) {
                 ladrillo.setVisible(false);
                 juegoService.actualizarPuntuacion(10);
                 
-                // Determinar desde qué lado viene la colisión
                 int centroLadrilloX = ladrillo.getX() + ladrillo.getAncho() / 2;
                 int centroLadrilloY = ladrillo.getY() + ladrillo.getAlto() / 2;
                 int centroPelotaX = pelota.getX() + pelota.getAncho() / 2;
                 int centroPelotaY = pelota.getY() + pelota.getAlto() / 2;
                 
-                // Si la diferencia en X es mayor que en Y, invertir dirección X
                 if (Math.abs(centroPelotaX - centroLadrilloX) > Math.abs(centroPelotaY - centroLadrilloY)) {
                     pelota.invertirDireccionX();
                 } else {
                     pelota.invertirDireccionY();
                 }
-                break; // Salir del bucle después de la primera colisión
+                break;
             }
         }
         
-        if (puntuacion >= 300) {
+        if (puntuacion >= 500) {
             mostrarMensajeVictoria();
-            return;
         }
-
     }
 
     void reiniciarPelota() {
-        // Reiniciar la pelota justo encima de la paleta
         pelota.setX(paleta.getX() + paleta.getAncho()/2 - pelota.getAncho()/2);
         pelota.setY(paleta.getY() - pelota.getAlto() - 5);
         pelota.setDx(0);
         pelota.setDy(0);
         juegoIniciado = false;
         
-        // Mostrar nuevamente las instrucciones
         configurarInstrucciones(getWidth(), getHeight());
     }
 
     private void salirAlMenu() {
         timer.stop();
-        frame.dispose(); // Cerrar la ventana de juego
+        frame.dispose();
         
-        // Crear y mostrar nueva ventana con el menú
         JFrame menuFrame = new JFrame("Brick Breaker");
         menuFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         menuFrame.setSize(600, 400);
@@ -286,7 +256,6 @@ public class PanelJuegoNivelMedio extends JPanel implements ActionListener {
         if (juegoIniciado) {
             long tiempoActual = System.currentTimeMillis();
 
-            // Verificar tiempo restante
             if (tiempoActual - tiempoInicio >= tiempoJuego) {
                 timer.stop();
                 JOptionPane.showMessageDialog(this, "¡Tiempo agotado! Game Over.");
@@ -298,7 +267,7 @@ public class PanelJuegoNivelMedio extends JPanel implements ActionListener {
             pelota.mover();
             detectarColisiones();
 
-            verificarYAgregarLadrillos(); // Verificar si es momento de añadir ladrillos
+            verificarYAgregarLadrillos();
 
             if (pelota.getY() > getHeight()) {
                 juegoService.perderVida();
@@ -315,8 +284,14 @@ public class PanelJuegoNivelMedio extends JPanel implements ActionListener {
         }
     }
 
+    private void verificarYAgregarLadrillos() {
+        long tiempoActual = System.currentTimeMillis();
+        if (tiempoActual - tiempoUltimosLadrillos >= tiempoLadrillos) {
+            agregarLadrillos(5);
+            tiempoUltimosLadrillos = tiempoActual;
+        }
+    }
 
-    // Getters y setters necesarios
     public int getPuntuacion() { 
         return puntuacion; 
     }
@@ -335,13 +310,4 @@ public class PanelJuegoNivelMedio extends JPanel implements ActionListener {
         JOptionPane.showMessageDialog(this, "¡Felicidades! Has ganado!");
         salirAlMenu();
     }
-    
-    private void verificarYAgregarLadrillos() {
-        long tiempoActual = System.currentTimeMillis();
-        if (tiempoActual - tiempoUltimosLadrillos >= tiempoLadrillos && tiempoActual - tiempoInicio <= 240000) {
-            agregarLadrillos(5); // Añadir 5 ladrillos
-            tiempoUltimosLadrillos = tiempoActual; // Actualizar el tiempo de última adición
-        }
-    }
-
 }

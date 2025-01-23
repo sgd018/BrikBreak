@@ -5,7 +5,7 @@ public class Pelota {
     private int y;
     private int ancho;
     private int alto;
-    private int dx;
+    private double dx;
     private int dy;
 
     public Pelota(int x, int y, int ancho, int alto, int dx, int dy) {
@@ -30,8 +30,8 @@ public class Pelota {
     public int getAlto() { return alto; }
     public void setAlto(int alto) { this.alto = alto; }
 
-    public int getDx() { return dx; }
-    public void setDx(int dx) { this.dx = dx; }
+    public double getDx() { return dx; }
+    public void setDx(double d) { this.dx = d; }
 
     public int getDy() { return dy; }
     public void setDy(int dy) { this.dy = dy; }
